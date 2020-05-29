@@ -141,9 +141,9 @@
             }, []);
 
             // Countries Per Page 
-            const indexOfLastPost = currentPage * countriesPerPage; // 1* 5 - currentPage =1 and countries per page defined = 5 (in usestate)
-            const indexOfFirstPost = indexOfLastPost - countriesPerPage; // 5 - 5
-            const currentCountries = countries.slice(indexOfFirstPost, indexOfLastPost); // (0,5)
+            const indexOfLastPage = currentPage * countriesPerPage; // 1* 5 - currentPage =1 and countries per page defined = 5 (in usestate)
+            const indexOfFirstPage = indexOfLastPage - countriesPerPage; // 5 - 5
+            const currentCountries = countries.slice(indexOfFirstPage, indexOfLastPage); // (0,5)
 
             //Change page
             const paginate = (pageNumber) => setCurrentPage(pageNumber); // paginate(number)
