@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rest-Countries</title>
+    <!-- Babel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+
+    <!-- React -->
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+</head>
+<style>
+    img {
+        height: 75px;
+        width: 75px;
+    }
+
+    .box {
+        width: 100%;
+        height: auto;
+        text-align: center;
+        padding-top: 20%;
+    }
+</style>
+
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const rootElement = document.getElementById("root");
+        const { render } = ReactDOM;
+        const { useState, useEffect, Fragment } = React;
+
+        const ContainerFluid = ({ children }) => {
+            return <div className="container-fluid">{children}</div>;
+        };
+
+        const Header = () => {
+            return <div className="row"></div>;
+        };
+
+        const CountriesTableHeader = () => (
+            <thead>
+                <tr>
+                    <th scope="col">Code</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Region</th>
+                    <th scope="col">Population</th>
+                    <th scope="col">Area</th>
+                    <th scope="col">Flag</th>
+                </tr>
+            </thead>
+        );
+
+        const CountriesTableBody = ({ countries }) => {
+            return (
+                <tbody>
+                    {countries.map((contry, index) => (
+                        <tr key={index}>
+                            <th>{contry.alpha3Code}</th>
+                            <td>{contry.name}</td>
+                            <td>{contry.region}</td>
+                            <td>{contry.population}</td>
+                            <td>{contry.area}</td>
+                            <td>
+                                <img src={contry.flag} className="img-thumbnail" />
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            );
+        };
+
+        const Loading = () => (
+            <div className="box">
+                <div className="spinner-grow" role="status">
+                    <span className="sr-only">Loading...</span>
+                </div>
+            </div>
+        );
+
+        const Countries = ({ countries }) => {
+            return (
+                <div className="row">
+                    <table className="table">
+                        <CountriesTableHeader />
+                        <CountriesTableBody countries={countries} />
+                    </table>
+                </div>
+            );
+        };
+
+        // Pagination Component
+        const Pagination = ({ countriesPerPage, totalPages, paginate }) => {
+            const pageNumbers = [];
+
+            for (let i = 1; i <= Math.round(totalPages / countriesPerPage); i++) {
+                pageNumbers.push(i);
+            }
+
+            return (
+                <nav>
+                    <ul className="pagination">
+                        {
+                            pageNumbers.map(number => (
+                                <li key={number} className="page-item">
+                                    <a onClick={() => paginate(number)} href="#" className="page-link">
+                                        {number}
+                                    </a>
+                                </li>
+                            ))
+                        }
+                    </ul>
+                </nav>
+            )
+        }
+
+        // APP Component
+        const App = () => {
+            const [countries, setCountries] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [currentPage, setCurrentPage] = useState(1);
+            const [countriesPerPage] = useState(10);
+
+
+
+            // componentDidMount
+            useEffect(() => {
+                fetch("https://restcountries.eu/rest/v2/all")
+                    .then((res) => res.json())
+                    .then((data) => {
+                        setCountries(data);
+                        setLoading(false);
+                    });
+            }, []);
+
+            // Countries Per Page 
+            const indexOfLastPost = currentPage * countriesPerPage; // 1* 5 - currentPage =1 and countries per page defined = 5 (in usestate)
+            const indexOfFirstPost = indexOfLastPost - countriesPerPage; // 5 - 5
+            const currentCountries = countries.slice(indexOfFirstPost, indexOfLastPost); // (0,5)
+
+            //Change page
+            const paginate = (pageNumber) => setCurrentPage(pageNumber); // paginate(number)
+
+            return (
+                <ContainerFluid>
+                    {loading ? (
+                        <Loading />
+                    ) : (
+                            <Fragment>
+                                <Header />
+                                <Countries countries={currentCountries} />
+                                <Pagination countriesPerPage={countriesPerPage} totalPages={countries.length} paginate={paginate} />
+                            </Fragment>
+                        )}
+                </ContainerFluid>
+            );
+        };
+
+        render(<App />, rootElement);
+    </script>
+</body>
+
+</html>
