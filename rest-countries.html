@@ -100,9 +100,14 @@
         const Pagination = ({ countriesPerPage, totalPages, paginate }) => {
             const pageNumbers = [];
 
-            for (let i = 1; i <= Math.round(totalPages / countriesPerPage); i++) {
-                pageNumbers.push(i);
-            }
+            const page_len = Math.round(totalPages / countriesPerPage)
+
+            // for (let i = 1; i <= page_len; i++) {
+            //     pageNumbers.push(i);
+            // }
+            
+            console.log(page_len)
+            Array(page_len).fill().map((_,i) => pageNumbers.push(i+1))
 
             return (
                 <nav>
